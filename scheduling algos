@@ -1,0 +1,262 @@
+#include <iostream>
+#include <vector>
+# include <algorithm>
+#include <string>
+
+using namespace std;
+
+
+
+
+class process {
+public:
+	string processName;
+	int arrivalTime;
+	int burstCycles;
+	int waitingTime = 0;
+	int turnAroundTime = 0;
+	bool execution = false;
+	
+
+
+	process(string a, int b, int c)
+	{
+		this->processName = a;
+		this->arrivalTime = b;
+		this->burstCycles = c;
+		this->waitingTime = -1 * c;
+	}
+	process() {}
+
+};
+vector<process> ready;
+vector<process>input;
+process* execute = new process("null",0,0);
+
+int algo;
+int timeStamp = 0;
+int totalWaitingTime = 0;
+int totalTurnAroundTime = 0;
+int totalBurstTime = 0;
+process* executer()
+{
+	process* temp = nullptr;
+	temp = &(*ready.begin());
+	switch (algo)
+	{
+	case 1:
+		for (auto i = ready.begin(); i != ready.end(); i++)
+		{
+			if (i->execution == true)
+			{
+				temp = &(*i);
+				return temp;
+			}
+			
+			}
+		for (auto i = ready.begin(); i != ready.end(); i++)
+		{
+
+
+
+			if ((i->arrivalTime) <= (temp->arrivalTime))
+			{
+				if (i->arrivalTime == temp->arrivalTime)
+				{
+					if (i->burstCycles < temp->burstCycles)
+						temp = &(*i);
+
+				}
+				else
+					temp = &(*i);
+			}
+
+
+
+
+		}
+
+		return temp;
+
+	case 3:
+		
+
+		for (auto i = ready.begin(); i != ready.end(); i++)
+		{
+			if (i->execution == true)
+			{
+				temp = &(*i);
+				return temp;
+			}
+		}
+
+
+
+
+		for (auto i = ready.begin(); i != ready.end(); i++)
+		{
+
+
+
+			if ((i->burstCycles) <= (temp->burstCycles))
+			{
+				if (i->burstCycles == temp->burstCycles)
+				{
+					if (i->arrivalTime < temp->arrivalTime)
+						temp = &(*i);
+
+				}
+				else
+					temp = &(*i);
+			}
+
+
+
+
+		}
+
+		return temp;
+
+
+	case 2:
+		
+
+		for (auto i = ready.begin(); i != ready.end(); i++)
+		{
+
+
+			if ((i->burstCycles) <= (temp->burstCycles))
+			{
+				if (i->burstCycles == temp->burstCycles)
+				{
+					if (i->arrivalTime < temp->arrivalTime)
+						temp = &(*i);
+
+				}
+				else
+					temp = &(*i);
+			}
+
+
+
+
+		}
+		return temp;
+	}
+}
+using namespace std;
+
+
+int main()
+
+{
+	char ab;
+	string processName;
+	int num, arrivalTime, burstCycles;
+	int numCompleted = 0;
+	string output = "ProcessName  TurnAroundTime WaitingTime\n";
+	cout << "Enter the algo number \n 1. FCFS \n 2. SJF Preemptive \n 3. SJF Non Preemptive" << endl;
+	cin >> algo;
+	cout << "Enter number of processes";
+	cin >> num;
+
+
+	for (int i = 0; i < num; i++)
+	{
+
+		cout << "enter process name" << endl;
+		cin >> processName;
+		cout << "Enter arrivalTime" << endl;
+		cin >> arrivalTime;
+		cout << "Enter burstCycles" << endl;
+		cin >> burstCycles;
+		process a(processName, arrivalTime, burstCycles);
+		totalBurstTime += a.burstCycles;
+
+		input.push_back(a);
+
+	}
+	
+
+
+	for (int p = 0; p < 1000; p++) {
+
+
+
+		for (auto i = input.begin(); i != input.end(); i++)
+		{
+			if (i->arrivalTime == timeStamp)
+			{
+				ready.push_back(*i);
+
+
+
+
+			}
+
+		}
+		
+
+
+
+		for (auto it = ready.begin(); it != ready.end(); ) {
+			if (it->burstCycles == 0) {
+				totalTurnAroundTime += it->turnAroundTime;
+				it->waitingTime = it->turnAroundTime + it->waitingTime;
+				output = output + "\n" + it->processName + "\t\t" + to_string(it->turnAroundTime) + "\t\t" + to_string(it->waitingTime);
+				numCompleted++;
+				it = ready.erase(it);
+			}
+			else {
+				++it;
+			}
+		}
+		for (auto it = ready.begin(); it != ready.end(); it++)
+		{
+			it->turnAroundTime++;
+		}
+
+
+
+
+		if (ready.empty())
+		{
+
+			execute = new process("null", 0, 0);
+
+		}
+		else
+		{
+			
+			execute = executer();
+			execute->execution = true;
+			execute->burstCycles--;
+		}
+
+
+		if (numCompleted == num)
+		{
+			break;
+		}
+
+
+
+
+		cout << timeStamp << endl << execute->processName << endl;
+
+
+		timeStamp++;
+
+
+
+	}
+	totalWaitingTime = totalTurnAroundTime - totalBurstTime;
+	cout << endl << output << endl;
+	cout << "*************************" << endl;
+	cout << "total turnAround\t" << totalTurnAroundTime << endl;
+	cout << "total burstTime\t\t" << totalBurstTime << endl;
+	cout << "total waitingTime\t" << totalWaitingTime;
+
+
+
+}
